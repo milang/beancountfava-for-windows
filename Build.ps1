@@ -1,5 +1,9 @@
 ﻿#Requires -version 7
 
+$ErrorActionPreference = "Stop"
+
+Write-Error "This is a problem..."
+
 Write-Host -NoNewline "Current directory: "
 Write-Host -ForegroundColor Yellow (Get-Location)
 
