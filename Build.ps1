@@ -7,21 +7,34 @@
 $ErrorActionPreference = "Stop"
 $homeDir = Get-Location
 
+# copy python
+Write-Host "::group::Copy Python"
+$sourcePython = (Get-Command "python").Source
+$sourcePythonDir = Resolve-Path (Split-Path $sourcePython)
+$favaDir = (New-Item -Force -ItemType Directory $env:PUBLIC/bin/fava).FullName
+Copy-Item -Recurse $sourcePythonDir $favaDir/python | Out-Null
+$pythonDir = Resolve-Path $favaDir/python
+$pipDir = Resolve-Path $pythonDir/Scripts
+$env:Path = $pythonDir.Path + ";" + $pipDir.Path + ";" + $env:Path
+Write-Host "::endgroup::"
+
 # update python tools (usually both pip and setuptools are outdated)
 Write-Host "::group::Update Python tools"
-python -m pip install --no-cache-dir --upgrade pip
+python -m pip install --no-cache-dir --upgrade --force-reinstall pip
 if ($LASTEXITCODE -ne 0) { Write-Error "pip upgrade failed" }
-pip install --no-cache-dir --upgrade setuptools
+python -m pip install --no-cache-dir --upgrade setuptools
 if ($LASTEXITCODE -ne 0) { Write-Error "setuptools install/upgrade failed" }
-pip install --no-cache-dir --upgrade virtualenv
+python -m pip install --no-cache-dir --upgrade virtualenv
 if ($LASTEXITCODE -ne 0) { Write-Error "virtualenv install/upgrade failed" }
+Write-Host "`e[0m" # Reset ANSI to prevent color leak from installers
+Write-Host "Python: $((Get-Command python -ErrorAction SilentlyContinue).Source)"
+Write-Host "PIP: $((Get-Command pip -ErrorAction SilentlyContinue).Source)"
+Write-Host "VirtualEnv: $((Get-Command virtualenv -ErrorAction SilentlyContinue).Source)"
 Write-Host "::endgroup::"
 
 # create virtualenv for fava
 Write-Host "::group::Create virtualenv for fava"
-$binDir = New-Item -Force -ItemType Directory $env:PUBLIC/bin
-Set-Location $binDir.FullName
-Write-Host (Get-Location)
+Set-Location $favaDir
 virtualenv fava
 if ($LASTEXITCODE -ne 0) { Write-Error "virtualenv creation failed" }
 Write-Host "::endgroup::"
@@ -30,14 +43,16 @@ Write-Host "::endgroup::"
 Write-Host "::group::Install fava"
 Set-Location fava
 ./Scripts/activate
-pip install --no-cache-dir --upgrade fava
+python -m pip install --no-cache-dir --upgrade fava
 if ($LASTEXITCODE -ne 0) { Write-Error "fava installation failed" }
 bean-check --version
-if ($LASTEXITCODE -ne 0) { Write-Error "bean-check failed" }
+if ($LASTEXITCODE -ne 0) { Write-Error "bean-check --version failed" }
+fava --version
+if ($LASTEXITCODE -ne 0) { Write-Error "fava --version failed" }
 Write-Host "::endgroup::"
 
 # package fava
 Write-Host "::group::Package fava"
 deactivate # global function added by "./Scripts/activate"
-7z a -r -mx $homeDir/fava.7z ./*
+7z a -r -mx $homeDir/fava.7z $favaDir/*
 Write-Host "::endgroup::"
