@@ -8,7 +8,20 @@ $ErrorActionPreference = "Stop"
 
 # update python tools (usually both pip and setuptools are outdated)
 Write-Host "::group::Update Python tools"
-pip list --outdated
 python -m pip install --no-cache-dir --upgrade pip
+if ($LASTEXITCODE -ne 0) { Write-Error "pip upgrade failed" }
 pip install --no-cache-dir --upgrade setuptools
+if ($LASTEXITCODE -ne 0) { Write-Error "setuptools install/upgrade failed" }
+pip install --no-cache-dir --upgrade virtualenv
+if ($LASTEXITCODE -ne 0) { Write-Error "virtualenv install/upgrade failed" }
+Write-Host "::endgroup::"
+
+# create virtualenv for fava
+Write-Host "::group::Create virtualenv for fava"
+$binDir = New-Item -Force -ItemType Directory $env:PUBLIC/bin
+Set-Location $binDir.FullName
+Write-Host (Get-Location)
+virtualenv fava
+if ($LASTEXITCODE -ne 0) { Write-Error "virtualenv creation failed" }
+Get-ChildItem
 Write-Host "::endgroup::"
