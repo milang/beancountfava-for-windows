@@ -25,3 +25,12 @@ virtualenv fava
 if ($LASTEXITCODE -ne 0) { Write-Error "virtualenv creation failed" }
 Get-ChildItem
 Write-Host "::endgroup::"
+
+# install fava
+Write-Host "::group::Install fava"
+Set-Location fava
+./Scripts/activate
+pip install --no-cache-dir --upgrade fava
+if ($LASTEXITCODE -ne 0) { Write-Error "fava installation failed" }
+Get-ChildItem . -Depth 2
+Write-Host "::endgroup::"
