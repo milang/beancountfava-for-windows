@@ -11,6 +11,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE
       - uses: actions/checkout@v3
 
-      - name: Get version
-        run: $PSVersionTable
-        shell: pwsh -Command "{0}"
+      - name: Run build script
+        run: ./Build.ps1
+        shell: pwsh -File "{0}"
