@@ -1,17 +1,14 @@
 ﻿#Requires -version 7
 
+# GitHub Actions workflow commands:
+# https://pakstech.com/blog/github-actions-workflow-commands/
+# https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
+
 $ErrorActionPreference = "Stop"
 
-Write-Error "This is a problem..."
-
-Write-Host -NoNewline "Current directory: "
-Write-Host -ForegroundColor Yellow (Get-Location)
-
-Get-Command git
-git --version
-
-Get-Command python
-python --version
-
-Get-Command pip
-pip --version
+# update python tools (usually both pip and setuptools are outdated)
+Write-Host "::group::Update Python tools"
+pip list --outdated
+python -m pip install --no-cache-dir --upgrade pip
+pip install --no-cache-dir --upgrade setuptools
+Write-Host "::endgroup::"
