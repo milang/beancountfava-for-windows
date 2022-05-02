@@ -5,6 +5,7 @@
 # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions
 
 $ErrorActionPreference = "Stop"
+$homeDir = Get-Location
 
 # update python tools (usually both pip and setuptools are outdated)
 Write-Host "::group::Update Python tools"
@@ -23,7 +24,6 @@ Set-Location $binDir.FullName
 Write-Host (Get-Location)
 virtualenv fava
 if ($LASTEXITCODE -ne 0) { Write-Error "virtualenv creation failed" }
-Get-ChildItem
 Write-Host "::endgroup::"
 
 # install fava
@@ -32,5 +32,12 @@ Set-Location fava
 ./Scripts/activate
 pip install --no-cache-dir --upgrade fava
 if ($LASTEXITCODE -ne 0) { Write-Error "fava installation failed" }
-Get-ChildItem . -Depth 2
+bean-check --version
+if ($LASTEXITCODE -ne 0) { Write-Error "bean-check failed" }
+Write-Host "::endgroup::"
+
+# package fava
+Write-Host "::group::Package fava"
+deactivate # global function added by "./Scripts/activate"
+7z a -r -mx $homeDir/fava.7z ./*
 Write-Host "::endgroup::"
