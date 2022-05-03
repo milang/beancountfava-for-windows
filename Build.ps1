@@ -43,7 +43,7 @@ Write-Host "::endgroup::"
 Write-Host "::group::Install fava"
 Set-Location app
 ./Scripts/activate
-pip install --no-cache-dir --upgrade fava
+pip install --no-cache-dir --upgrade "fava[excel]"
 if ($LASTEXITCODE -ne 0) { Write-Error "fava installation failed" }
 bean-check --version
 if ($LASTEXITCODE -ne 0) { Write-Error "bean-check --version failed" }
