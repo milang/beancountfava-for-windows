@@ -14,6 +14,7 @@ $sourcePythonDir = Resolve-Path (Split-Path $sourcePython)
 $favaDir = (New-Item -Force -ItemType Directory $env:PUBLIC/bin/fava).FullName
 Copy-Item -Recurse $sourcePythonDir $favaDir/python | Out-Null
 $pythonDir = Resolve-Path $favaDir/python
+Write-Host "Copied Python from `"$sourcePythonDir`" to `"$pythonDir`""
 $pythonScriptsDir = Resolve-Path $pythonDir/Scripts
 $env:Path = $pythonDir.Path + ";" + $pythonScriptsDir.Path + ";" + $env:Path
 Write-Host "::endgroup::"
@@ -27,9 +28,9 @@ if ($LASTEXITCODE -ne 0) { Write-Error "setuptools install/upgrade failed" }
 pip install --no-cache-dir --upgrade virtualenv
 if ($LASTEXITCODE -ne 0) { Write-Error "virtualenv install/upgrade failed" }
 Write-Host "`e[0m" # Reset ANSI to prevent color leak from installers
-Write-Host "Python: $((Get-Command python -ErrorAction SilentlyContinue).Source)"
-Write-Host "PIP: $((Get-Command pip -ErrorAction SilentlyContinue).Source)"
-Write-Host "VirtualEnv: $((Get-Command virtualenv -ErrorAction SilentlyContinue).Source)"
+Write-Host "Python: $((Get-Command python).Source), version $(python --version)"
+Write-Host "PIP: $((Get-Command pip).Source), version $(pip --version)"
+Write-Host "VirtualEnv: $((Get-Command virtualenv).Source), version $(virtualenv --version)"
 Write-Host "::endgroup::"
 
 # create virtualenv for fava
