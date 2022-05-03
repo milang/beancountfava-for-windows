@@ -14,17 +14,17 @@ $sourcePythonDir = Resolve-Path (Split-Path $sourcePython)
 $favaDir = (New-Item -Force -ItemType Directory $env:PUBLIC/bin/fava).FullName
 Copy-Item -Recurse $sourcePythonDir $favaDir/python | Out-Null
 $pythonDir = Resolve-Path $favaDir/python
-$pipDir = Resolve-Path $pythonDir/Scripts
-$env:Path = $pythonDir.Path + ";" + $pipDir.Path + ";" + $env:Path
+$pythonScriptsDir = Resolve-Path $pythonDir/Scripts
+$env:Path = $pythonDir.Path + ";" + $pythonScriptsDir.Path + ";" + $env:Path
 Write-Host "::endgroup::"
 
 # update python tools (usually both pip and setuptools are outdated)
 Write-Host "::group::Update Python tools"
-python -m pip install --no-cache-dir --upgrade --force-reinstall pip
+python -m pip install --no-cache-dir --upgrade --force-reinstall pip # "pip" already existed in "$sourcePython", but it was bound to "$sourcePython"; we "--force-reinstall" to create a new "pip" that is bound to its new home
 if ($LASTEXITCODE -ne 0) { Write-Error "pip upgrade failed" }
-python -m pip install --no-cache-dir --upgrade setuptools
+pip install --no-cache-dir --upgrade setuptools
 if ($LASTEXITCODE -ne 0) { Write-Error "setuptools install/upgrade failed" }
-python -m pip install --no-cache-dir --upgrade virtualenv
+pip install --no-cache-dir --upgrade virtualenv
 if ($LASTEXITCODE -ne 0) { Write-Error "virtualenv install/upgrade failed" }
 Write-Host "`e[0m" # Reset ANSI to prevent color leak from installers
 Write-Host "Python: $((Get-Command python -ErrorAction SilentlyContinue).Source)"
@@ -43,7 +43,7 @@ Write-Host "::endgroup::"
 Write-Host "::group::Install fava"
 Set-Location fava
 ./Scripts/activate
-python -m pip install --no-cache-dir --upgrade fava
+pip install --no-cache-dir --upgrade fava
 if ($LASTEXITCODE -ne 0) { Write-Error "fava installation failed" }
 bean-check --version
 if ($LASTEXITCODE -ne 0) { Write-Error "bean-check --version failed" }
