@@ -35,13 +35,13 @@ Write-Host "::endgroup::"
 # create virtualenv for fava
 Write-Host "::group::Create virtualenv for fava"
 Set-Location $favaDir
-virtualenv fava
+virtualenv app
 if ($LASTEXITCODE -ne 0) { Write-Error "virtualenv creation failed" }
 Write-Host "::endgroup::"
 
 # install fava
 Write-Host "::group::Install fava"
-Set-Location fava
+Set-Location app
 ./Scripts/activate
 pip install --no-cache-dir --upgrade fava
 if ($LASTEXITCODE -ne 0) { Write-Error "fava installation failed" }
