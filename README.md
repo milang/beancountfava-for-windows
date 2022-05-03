@@ -18,3 +18,6 @@ C:\Users\Public\bin\fava
     ↪ (extracted directory "app" -- beancount + fava, self-contained via Python virtual environment)
     ↪ (extracted directory "python" -- private Python 3 instance used by "app")
 ```
+
+The latest release is currently [Beancount 2.3.5](https://github.com/beancount/beancount/releases/tag/2.3.5)
+and [Fava 1.21](https://github.com/beancount/fava/releases/tag/v1.21).
